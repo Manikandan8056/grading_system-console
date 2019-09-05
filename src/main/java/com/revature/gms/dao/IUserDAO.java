@@ -8,10 +8,10 @@ import com.revature.gms.model.StudentDetails;
 
 public interface IUserDAO {
 
-	StudentDetails findByStudent(String name, int regno) throws DBException;
+	StudentDetails findByRegNo(String name, int regno) throws DBException;
 
-	List<StudentDetails> findByGrade(String grade) throws SQLException;
+	List<StudentDetails> findByGrade(String grade) throws SQLException, DBException;
 
-	void findBySubject(String sub) throws SQLException;
+	List<StudentDetails> findBySubject(String sub) throws SQLException, DBException;
 
 }

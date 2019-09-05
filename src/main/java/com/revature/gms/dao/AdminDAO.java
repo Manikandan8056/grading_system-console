@@ -8,19 +8,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.revature.gms.exception.DBException;
-import com.revature.gms.model.AdminDetails;
+import com.revature.gms.model.UserDetails;
 import com.revature.gms.model.StudentDetails;
-import com.revature.gms.model.StudentMark;
 import com.revature.gms.util.*;
 
 public class AdminDAO implements IAdminDAO {
 	
-	public AdminDetails findAdmin(String name, String pwd) throws DBException  {
+	public UserDetails findAdmin(String name, String pwd) throws DBException  {
 		
 		Connection con = null;
 		PreparedStatement pst = null;
-		AdminDetails admin=null;
-		
+		UserDetails admin=null;
+		ResultSet rs = null;
 		
 		try {
 			con=ConnectionUtil.getConnection();
@@ -28,10 +27,10 @@ public class AdminDAO implements IAdminDAO {
 			pst = con.prepareStatement(sql);
 			pst.setString(1, name);
 			pst.setString(2, pwd);
-			ResultSet rs = pst.executeQuery();
+			rs = pst.executeQuery();
 			
 			if(rs.next()) {
-				admin= new AdminDetails();
+				admin= new UserDetails();
 				
 				admin.setName(rs.getString("name"));
 				admin.setMobno(rs.getLong("mob_no"));
@@ -42,46 +41,49 @@ public class AdminDAO implements IAdminDAO {
 			e.printStackTrace();
 			throw new DBException("Unable to Admin-login",e);
 		}finally {
-			ConnectionUtil.close(con, pst);
+			ConnectionUtil.close(con, pst, rs);
 		}
 		return admin;
 	}
 
-	public void updateMarks(String name, int regno, int s1, int s2, int s3, int s4, int s5, int total, int avg, String grade) throws DBException {
+	public void updateMarks( StudentDetails studentdetail) throws DBException {
 
 		Connection con = null;
 		PreparedStatement pst = null;
 		con=ConnectionUtil.getConnection();
+		ResultSet rs = null;
 		
 		try {
 			String sql = "insert into student_details (student_name, reg_no, sub1, sub2, sub3, sub4, sub5, total, average, grade) values (?,?,?,?,?,?,?,?,?,?)";
 			pst = con.prepareStatement(sql);
-			pst.setString(1, name);
-			pst.setInt(2, regno);
-			pst.setInt(3, s1);
-			pst.setInt(4, s2);
-			pst.setInt(5, s3);
-			pst.setInt(6, s4);
-			pst.setInt(7, s5);
-			pst.setInt(8, total);
-			pst.setInt(9, avg);
-			pst.setString(10, grade);
+			pst.setString(1, studentdetail.getStudName());
+			pst.setInt(2, studentdetail.getRegNo());
+			pst.setInt(3, studentdetail.getSub1());
+			pst.setInt(4, studentdetail.getSub2());
+			pst.setInt(5, studentdetail.getSub3());
+			pst.setInt(6, studentdetail.getSub4());
+			pst.setInt(7, studentdetail.getSub5());
+			pst.setInt(8, studentdetail.getTotal());
+			pst.setFloat(9, studentdetail.getAvg());
+			pst.setString(10, studentdetail.getGrade());
 			int rows = pst.executeUpdate();
 			System.out.println("No of rows inserted:" + rows);
 		
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new DBException("Unable to login",e);
+		}finally {
+			ConnectionUtil.close(con, pst, rs);
 		}
 		
 	}
 	
-	public void updateMarks(StudentMark mark) throws DBException {
+	/*public void updateMarks(StudentMark mark) throws DBException {
 
 		Connection con = null;
 		PreparedStatement pst = null;
 		con=ConnectionUtil.getConnection();
-		
+
 		try {
 			String sql = "insert into student_marks ( reg_no, subject_name,marks) values (?,?,?)";
 			pst = con.prepareStatement(sql);
@@ -94,25 +96,36 @@ public class AdminDAO implements IAdminDAO {
 		
 		} catch (Exception e) {
 			e.printStackTrace();
-			throw new DBException("Unable to login",e);
+			throw new DBException("Unable to update your mark",e);
+		}finally {
+			ConnectionUtil.close(con, pst);
 		}
 		
-	}
+	}*/
 
-	public List<StudentDetails> listOfStudents() throws SQLException {
+	public List<StudentDetails> listOfStudents() throws SQLException, DBException {
 
-		Connection con = ConnectionUtil.getConnection();
-		String sql = "select * from student_details order by grade";
-		PreparedStatement pst = con.prepareStatement(sql);
+		List<StudentDetails> list;
+		Connection con = null;
+		PreparedStatement pst = null;
+		ResultSet rs = null;
 		
-		ResultSet rs = pst.executeQuery();
-		List<StudentDetails> list=new ArrayList<StudentDetails>();
-		
-		while (rs.next()) {
-			StudentDetails details = toRow1(rs);
-			list.add(details);
+		try {
+			con = ConnectionUtil.getConnection();
+			String sql = "select * from student_details order by grade";
+			pst = con.prepareStatement(sql);
+			rs = pst.executeQuery();
+			list = new ArrayList<StudentDetails>();
+			while (rs.next()) {
+				StudentDetails details = toRow1(rs);
+				list.add(details);
+			} 
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new DBException("Unable to get the records",e);
+		}finally {
+			ConnectionUtil.close(con, pst, rs);
 		}
-		
 		return list;
 	}
 	

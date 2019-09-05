@@ -9,8 +9,11 @@ public class StudentDetails {
 	private int sub3;
 	private int sub4;
 	private int sub5;
+	private int subject;
+
 	private int total;
-	private int avg;
+	private float avg;
+	
 	private String grade;
 	
 		
@@ -73,10 +76,10 @@ public class StudentDetails {
 	public void setTotal(int total) {
 		this.total = total;
 	}
-	public int getAvg() {
+	public float getAvg() {
 		return avg;
 	}
-	public void setAvg(int avg) {
+	public void setAvg(float avg) {
 		this.avg = avg;
 	}
 	public String getGrade() {
@@ -85,5 +88,13 @@ public class StudentDetails {
 	public void setGrade(String grade) {
 		this.grade = grade;
 	}
+	public int getSubject() {
+		return subject;
+	}
+
+	public void setSubject(int subject) {
+		this.subject = subject;
+	}
+	
 
 }

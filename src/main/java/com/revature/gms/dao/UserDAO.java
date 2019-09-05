@@ -4,7 +4,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,12 +13,12 @@ import com.revature.gms.util.ConnectionUtil;
 
 public class UserDAO implements IUserDAO {
 
-	public StudentDetails findByStudent(String name, int regno) throws DBException {
+	public StudentDetails findByRegNo(String name, int regno) throws DBException {
 		
 		Connection con = null;
 		PreparedStatement pst = null;
 		StudentDetails student=null;
-		
+		ResultSet rs = null;
 		
 		try {
 			con=ConnectionUtil.getConnection();
@@ -27,7 +26,7 @@ public class UserDAO implements IUserDAO {
 			pst = con.prepareStatement(sql);
 			pst.setString(1, name);
 			pst.setInt(2, regno);
-			ResultSet rs = pst.executeQuery();
+			rs = pst.executeQuery();
 			
 			if(rs.next()) {
 				student= new StudentDetails();
@@ -48,7 +47,7 @@ public class UserDAO implements IUserDAO {
 			e.printStackTrace();
 			throw new DBException("Unable to Student-login ",e);
 		}finally {
-			ConnectionUtil.close(con, pst);
+			ConnectionUtil.close(con, pst, rs);
 		}
 		return student;
 	}
@@ -91,18 +90,30 @@ public class UserDAO implements IUserDAO {
 		return list;
 	}*/
 
-	public List<StudentDetails> findByGrade(String grade) throws SQLException {
-
-		Connection con = ConnectionUtil.getConnection();
-		String sql = "select * from student_details where grade = ? order by average desc;";
-		PreparedStatement pst = con.prepareStatement(sql);
-		pst.setString(1, grade);
-		ResultSet rs = pst.executeQuery();
-		List<StudentDetails> list=new ArrayList<StudentDetails>();
+	public List<StudentDetails> findByGrade(String grade) throws  DBException {
+		Connection con = null;
+		PreparedStatement pst = null;
+		List<StudentDetails> list=null;
+		ResultSet rs = null;
 		
-		while (rs.next()) {
-			StudentDetails details = toRow1(rs);
-			list.add(details);
+		try {
+			con = ConnectionUtil.getConnection();
+			String sql = "select * from student_details where grade = ? order by average desc;";
+			pst = con.prepareStatement(sql);
+			pst.setString(1, grade);
+			rs = pst.executeQuery();
+			list= new ArrayList<StudentDetails>();
+			
+			while (rs.next()) {
+				StudentDetails details = toRow1(rs);
+				list.add(details);
+			}
+		
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new DBException("Unable to Student-login ",e);
+		}finally {
+			ConnectionUtil.close(con, pst, rs);
 		}
 		
 		return list;
@@ -125,21 +136,35 @@ public class UserDAO implements IUserDAO {
 		return details;
 	}
 
-	public void findBySubject(String sub) throws SQLException {
-
-		Connection con = ConnectionUtil.getConnection();
-		String sql = "select student_name,reg_no,"+sub+" as subject from student_details order by "+sub+" desc";
-		Statement pst = con.createStatement();
-		ResultSet rs = pst.executeQuery(sql);
+	public List<StudentDetails> findBySubject(String sub) throws SQLException, DBException {
+		Connection con1 = null;
+		PreparedStatement pst1 = null;
+		StudentDetails student1=null;
+		List<StudentDetails> det=null;
+		ResultSet rs = null;
+		try {
+			con1 = ConnectionUtil.getConnection();
+			String sql = "select student_name,reg_no,"+sub+" as subject from student_details order by "+sub+" desc";
+			pst1 = con1.prepareStatement(sql);
+			rs = pst1.executeQuery();
+			det= new ArrayList<StudentDetails>();
+			while(rs.next()) {
+				student1= new StudentDetails();
+				student1.setStudName(rs.getString("student_name"));
+				student1.setRegNo(rs.getInt("reg_no"));
+				student1.setSubject(rs.getInt("subject"));
+				
+				det.add(student1);
+			}
 		
-		while (rs.next()) {
-			
-			int subj=rs.getInt("subject");
-			int reg=rs.getInt("reg_no");
-			String name=rs.getString("student_name");
-			 
-			System.out.println(subj+"            "+reg+"           "+name );
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new DBException("Unable to Student-login ",e);
+		}finally {
+			ConnectionUtil.close(con1, pst1, rs);
 		}
+		return det;
+	
 		
 	}
 

@@ -3,6 +3,7 @@ package com.revature.gms.util;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class ConnectionUtil {
@@ -32,17 +33,31 @@ public class ConnectionUtil {
 		return con;
 	}
 
-	public static void close(Connection con, PreparedStatement pst) {
+	public static void close(Connection con, PreparedStatement pst, ResultSet rs) {
 
 		try {
 			if (pst != null) 
 				pst.close();
 			if (con != null)
 				con.close();
+			if (rs != null)
+				rs.close();
 		}
 		catch(Exception e) {
-			
+		
 		}
+	}
+		public static void close(Connection con, PreparedStatement pst) {
+
+			try {
+				if (pst != null) 
+					pst.close();
+				if (con != null)
+					con.close();
+			}
+			catch(Exception e) {
+				
+			}
 		
 		
 	}

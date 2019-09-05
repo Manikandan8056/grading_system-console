@@ -1,6 +1,6 @@
 package com.revature.gms.model;
 
-public class AdminDetails {
+public class UserDetails {
 	
 	private String name;
 	private long mobno;
