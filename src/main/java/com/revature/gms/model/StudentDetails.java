@@ -24,10 +24,6 @@ public class StudentDetails {
 				+ "%  , GRADE= " + grade + "]";
 	}
 
-	public String toString1() {
-		return "StudentDetails [studName =" + studName + ",   regNo =" + regNo + ",   Percentage =" + avg + ",   grade =" + grade + "]";
-	}
-	
 	public String getStudName() {
 		return studName;
 	}

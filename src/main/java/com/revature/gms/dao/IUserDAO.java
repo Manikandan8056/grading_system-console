@@ -14,4 +14,6 @@ public interface IUserDAO {
 
 	List<StudentDetails> findBySubject(String sub) throws SQLException, DBException;
 
+	void updateMarks(StudentDetails studentdetail) throws DBException;
+
 }

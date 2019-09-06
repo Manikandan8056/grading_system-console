@@ -1,13 +1,13 @@
 package com.revature.gms.exception;
 
-public class ValidationException extends Exception {
+public class ValidatorException extends Exception {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 
-	public ValidationException(String message) {
+	public ValidatorException(String message) {
 
 		super(message);
 	}
